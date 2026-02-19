@@ -61,7 +61,11 @@ class HomePageState extends State<HomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SwipeCard(card: cardService.getCurrentCard(), onSwipe: handleSwipe),
+            SwipeCard(
+              key: ValueKey<int>(cardService.getCurrentCard().id),
+              card: cardService.getCurrentCard(),  // ✅ la carte entière
+              onSwipe: handleSwipe,
+            ),            
             const SizedBox(height: 20),
             if (nextCardReady)
               ElevatedButton(onPressed: showNext, child: const Text('Prochain défis'),
