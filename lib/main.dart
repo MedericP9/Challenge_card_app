@@ -11,10 +11,13 @@ class DefiCartesApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Défis Cartes',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.pink,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF6C63FF),
+        ),
+        scaffoldBackgroundColor: const Color(0xFFF5F7FB),
       ),
       home: const HomePage(),
     );

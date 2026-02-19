@@ -57,22 +57,46 @@ class HomePageState extends State<HomePage> {
           )
         ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SwipeCard(
-              key: ValueKey<int>(cardService.getCurrentCard().id),
-              card: cardService.getCurrentCard(),  // ✅ la carte entière
-              onSwipe: handleSwipe,
-            ),            
-            const SizedBox(height: 20),
-            if (nextCardReady)
-              ElevatedButton(onPressed: showNext, child: const Text('Prochain défis'),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color(0xFF667EEA),
+              Color(0xFF764BA2),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SwipeCard(
+                key: ValueKey<int>(cardService.getCurrentCard().id),
+                card: cardService.getCurrentCard(),
+                onSwipe: handleSwipe,
               ),
-          ],
+              const SizedBox(height: 20),
+              if (nextCardReady)
+                ElevatedButton(
+                  onPressed: showNext,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.deepPurple,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 40, vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  child: const Text("Prochain défi"),
+                ),
+            ],
+          ),
         ),
       ),
+
     );
   }
 }

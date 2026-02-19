@@ -58,10 +58,69 @@ class _SwipeCardState extends State<SwipeCard> {
         duration: const Duration(milliseconds: 300),
         transform: Matrix4.translationValues(_dragX, 0, 0)
           ..rotateZ(_dragX * 0.0008),
-        child: _cardView(),
+        child: Stack(
+          children: [
+            _cardView(),
+
+            // LIKE overlay
+            Positioned(
+              top: 40,
+              left: 20,
+              child: Opacity(
+                opacity: _dragX > 50 ? (_dragX / 200).clamp(0, 1) : 0,
+                child: Transform.rotate(
+                  angle: -0.5,
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.green, width: 4),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Text(
+                      "LIKE",
+                      style: TextStyle(
+                        color: Colors.green,
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            // DISLIKE overlay
+            Positioned(
+              top: 40,
+              right: 20,
+              child: Opacity(
+                opacity: _dragX < -50 ? (-_dragX / 200).clamp(0, 1) : 0,
+                child: Transform.rotate(
+                  angle: 0.5,
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.red, width: 4),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Text(
+                      "NOPE",
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
+
 
   Widget _cardView() {
     return Card(
