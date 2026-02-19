@@ -1,0 +1,6 @@
+[
+  {"id":1,"title":"Petit plaisir","text":"Fais-toi un chocolat chaud et savoure-le sans distraction","pack":"free"},
+  {"id":2,"title":"Petit défi extérieur","text":"Fais une promenade de 10 minutes dehors","pack":"free"},
+  {"id":3,"title":"Défi couple","text":"Écris un message gentil à ton partenaire","pack":"premium"},
+  {"id":4,"title":"Défi créativité","text":"Dessine quelque chose pendant 5 minutes","pack":"premium"}
+]
