@@ -6,6 +6,8 @@ import 'storage_service.dart';
 class CardService {
   List<CardModel> allCards = [];
   int currentIndex = 0;
+  int get totalCards => allCards.length;
+
 
   Future<void> loadCards() async {
     final data = await rootBundle.loadString('lib/data/cards.json');
@@ -19,6 +21,14 @@ class CardService {
 
   CardModel getCurrentCard() => allCards[currentIndex];
   
+  CardModel getNextCardPreview() {
+    if (currentIndex + 1 < allCards.length) {
+      return allCards[currentIndex + 1];
+    }
+    return allCards[currentIndex];
+  }
+
+
   Future<void> swipeCard(bool liked) async 
   {
     final currentCard = allCards[currentIndex];

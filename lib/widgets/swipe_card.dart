@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/card_model.dart';
+import '../widgets/card_view.dart';
+
 
 class SwipeCard extends StatefulWidget {
   final CardModel card;
@@ -60,7 +62,7 @@ class _SwipeCardState extends State<SwipeCard> {
           ..rotateZ(_dragX * 0.0008),
         child: Stack(
           children: [
-            _cardView(),
+            CardView(card: widget.card),
 
             // LIKE overlay
             Positioned(

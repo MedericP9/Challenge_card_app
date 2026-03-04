@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../services/card_service.dart';
 import '../widgets/swipe_card.dart';
 import 'favorite_page.dart';
+import '../widgets/card_view.dart';
+
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -12,8 +14,8 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
   final CardService cardService = CardService();
-  bool nextCardReady = false;
   bool loading = true;
+  bool _isAdvancing = false;
 
   @override
   void initState() {
@@ -28,35 +30,56 @@ class HomePageState extends State<HomePage> {
 
   void handleSwipe(bool liked) async {
     await cardService.swipeCard(liked);
-    setState(() => nextCardReady = true);
-  }
 
-  void showNext() {
-    setState((){
-      if (cardService.hasNext()) {
-          cardService.showNext();
-          nextCardReady = false;
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No more cards!')));
-        }
+    if (!cardService.hasNext()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Plus de cartes !')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isAdvancing = true;
+    });
+
+    await Future.delayed(const Duration(milliseconds: 250));
+
+    setState(() {
+      cardService.showNext();
+      _isAdvancing = false;
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
     if (loading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
     }
+
+    final currentCard = cardService.getCurrentCard();
+    final hasNext = cardService.hasNext();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Défis Cartes'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         actions: [
           IconButton(
             icon: const Icon(Icons.favorite),
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FavoritesPage())),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const FavoritesPage(),
+              ),
+            ),
           )
         ],
       ),
+      extendBodyBehindAppBar: true,
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -68,35 +91,60 @@ class HomePageState extends State<HomePage> {
             end: Alignment.bottomRight,
           ),
         ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SwipeCard(
-                key: ValueKey<int>(cardService.getCurrentCard().id),
-                card: cardService.getCurrentCard(),
-                onSwipe: handleSwipe,
-              ),
-              const SizedBox(height: 20),
-              if (nextCardReady)
-                ElevatedButton(
-                  onPressed: showNext,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.deepPurple,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 40, vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const SizedBox(height: 100),
+
+            // 🃏 Stack effet Tinder
+            Expanded(
+              child: Center(
+                child: 
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+
+                    if (hasNext)
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 20),
+                        curve: Curves.easeOut,
+                        transform: Matrix4.identity()
+                          ..translate(0.0, _isAdvancing ? 0.0 : -12.0)
+                          ..scale(_isAdvancing ? 1.0 : 0.96),
+                        child: Opacity(
+                          opacity: 0.9,
+                          child: CardView(
+                            card: cardService.getNextCardPreview(),
+                          ),
+                        ),
+                      ),
+
+                    SwipeCard(
+                      key: ValueKey<int>(currentCard.id),
+                      card: currentCard,
+                      onSwipe: handleSwipe,
                     ),
-                  ),
-                  child: const Text("Prochain défi"),
+                  ],
                 ),
-            ],
-          ),
+
+              ),
+            ),
+
+            // 📊 Compteur progression
+            Padding(
+              padding: const EdgeInsets.only(bottom: 40),
+              child: Text(
+                "${cardService.currentIndex + 1} / ${cardService.totalCards}",
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
-
     );
   }
 }
